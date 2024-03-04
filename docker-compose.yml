@@ -1,0 +1,48 @@
+version: '3.8'
+
+networks:
+  my-bridge-network:
+    driver: bridge
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    ports:
+      - "27017:27017"
+    networks:
+      - my-bridge-network
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+
+  nodejs:
+    build:
+      context: .
+      dockerfile: /root/saketh/nodejsdocker/docker-js/Dockerfile
+    container_name: nodejs
+    ports:
+      - "3000:4000"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/mydatabase
+    depends_on:
+      - mongodb
+    restart: always
+    volumes:
+      - /root/saketh/nodejsdocker/docker-js/package.json:/usr/src/app/package.json
+      - /root/saketh/nodejsdocker/docker-js/app.js:/usr/src/app/app.js
+      - /root/saketh/nodejsdocker/docker-js/index.js:/usr/src/app/index.js
+      - /root/saketh/nodejsdocker/docker-js/public:/usr/src/app/public
+      - /root/saketh/nodejsdocker/docker-js/views:/usr/src/app/views
+
+
+    networks:
+      - my-bridge-network
+
+volumes:
+  mongodb_data:
