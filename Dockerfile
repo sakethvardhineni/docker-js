@@ -11,8 +11,8 @@ COPY package.json ./
 RUN npm install
 
 # Copy the rest of the application code
-COPY app.js
-COPY index.js
+COPY app.js ./
+COPY index.js ./
 COPY public ./public
 COPY views ./views
 
